@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 import pytz
 import uuid
 from decimal import Decimal
@@ -12,13 +12,13 @@ time_zone = '' # for a list of time zones: pytz.all_timezones
 # --------------------------- EDIT THESE VALUES ---------------------------
 
 
-# ----- AUTOML ------
+# --------------------------- AUTOML ---------------------------
 project_id = os.environ.get('AUTOML_PROJECT_ID')
 model_id = os.environ.get('AUTOML_MODEL_ID')
 compute_region = os.environ.get('AUTOML_COMPUTE_REGION')
 # the level of confidence the model must have to return the results for a class label
 score_threshold = '0.0' # value from 0.0 to 1.0; default is 0.5
-# ----- AWS -----
+# --------------------------- AWS ---------------------------
 table_id = os.environ.get('IMAGE_CLASSIFICATIONS_TABLE')
 destination_bucket_name = os.environ.get('DESTINATION_BUCKET')
 s3_client = boto3.client('s3')
@@ -57,7 +57,7 @@ def lambda_handler(event, context):
             content = downloaded_file.read()
         output = get_prediction(content, project_id, model_id)
         image_id = str(uuid.uuid4())
-        current_time = datetime.datetime.now(pytz.timezone(time_zone))
+        current_time = datetime.now(pytz.timezone(time_zone))
         
         # update dynamodb table
         # NOTE: dynamodb requires float types to be converted to Decimal types

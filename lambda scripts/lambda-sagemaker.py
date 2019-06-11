@@ -42,7 +42,6 @@ def lambda_handler(event, context):
         response = runtime.invoke_endpoint(EndpointName=endpoint_name,
                                            Body=content)
         result = json.loads(response['Body'].read().decode())
-        #current_time = datetime.datetime.now(pytz.timezone(time_zone))
         current_time = datetime.now(pytz.timezone(time_zone))
         image_id = str(uuid.uuid4())
 
