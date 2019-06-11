@@ -8,12 +8,12 @@ from datetime import datetime
 
 
 # --------------------------- EDIT THESE VALUES ---------------------------
-time_zone = '' # for a list of times: print(pytz.all_timezones)
+time_zone = '' # for a list of time zones: pytz.all_timezones
 classes   = [] # e.g. ['CLUSTER', 'DEEP', 'NEBULA', 'STARS']
 # --------------------------- EDIT THESE VALUES ---------------------------
 
 
-endpoint_name = os.environ['ENDPOINT_NAME']
+endpoint_name = os.environ.get('ENDPOINT_NAME')
 table_id = os.environ.get('IMAGE_CLASSIFICATIONS_TABLE')
 destination_bucket_name = os.environ.get('DESTINATION_BUCKET')
 s3_client = boto3.client('s3')

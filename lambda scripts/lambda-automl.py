@@ -8,7 +8,7 @@ from google.cloud import automl_v1beta1 as automl
 
 
 # --------------------------- EDIT THESE VALUES ---------------------------
-time_zone = '' # for a list of times: print(pytz.all_timezones)
+time_zone = '' # for a list of time zones: pytz.all_timezones
 # --------------------------- EDIT THESE VALUES ---------------------------
 
 
