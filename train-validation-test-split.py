@@ -17,19 +17,19 @@ msg = 'The sum of train, validation, and test proportions must equal 1.0'
 assert(args.train + args.validation + args.test == 1.0), msg
 
 seed(0) # set numpy random seed
-EXTENSIONS = ['.jpg', '.png', '.gif']
 train_path = os.path.join(args.path, "train")
 validation_path = os.path.join(args.path, "validation")
 test_path = os.path.join(args.path, "test")
 classes = os.listdir(args.path)
 classes = list(filter(lambda x: x not in ['.DS_Store'], classes))
+extensions = ['.jpg', '.png', '.gif']
 
 
 for cls in classes:
     # for each class, randomly shuffle the images, and then split into train, validation, and test sets
     images = os.listdir(os.path.join(args.path, cls))
     # make sure to grab only image files
-    images = list(filter(lambda img_name: any([str(img_name).endswith(extension) for extension in EXTENSIONS]), images))
+    images = list(filter(lambda img_name: any([str(img_name).endswith(extension) for extension in extensions]), images))
     shuffle(images)
     stop = int(args.train*len(images))
     train_images = images[0: stop]
