@@ -22,7 +22,7 @@ parser.add_argument('-b', '--batchsize', type=int, default=1, metavar='',
                     help='Number of training samples to process before updating the model’s weights.')
 parser.add_argument('-l', '--learning_rate', type=float, default=0.0001, metavar='',
                     help='Model learning rate.')
-parser.add_argument('-d', '--deploy', action='store_true', default=False,
+parser.add_argument('-d', '--deploy', action='store_true',
                     help='Whether to deploy the model after training.')
 args = parser.parse_args()
 
