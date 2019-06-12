@@ -8,8 +8,8 @@ from google.cloud import storage
 parser = argparse.ArgumentParser(description='Compile CSV file of Google Cloud images for Google Cloud AutoML.')
 parser.add_argument('bucket', type=str, metavar='', help='Name of Google Cloud bucket.')
 parser.add_argument('project_folder', type=str, metavar='', help='Name of Google Cloud project.')
-parser.add_argument('save_path', type=str, metavar='', help='Path to CSV file. (e.g. /Users/johndoe/Desktop/gcloud_data.csv)')
-parser.add_argument('classes', type=str, nargs='*', metavar='', help='Classes/labels in dataset. (e.g. dog cat bird)')
+parser.add_argument('save_path', type=str, metavar='', help='Path to CSV file (e.g. /Users/johndoe/Desktop/gcloud_data.csv).')
+parser.add_argument('classes', type=str, nargs='*', metavar='', help='Classes/labels in dataset (e.g. dog cat bird).')
 args = parser.parse_args()
 
 

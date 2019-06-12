@@ -17,7 +17,7 @@ msg = 'The sum of train, validation, and test proportions must equal 1.0'
 assert(args.train + args.validation + args.test == 1.0), msg
 
 seed(0) # set numpy random seed
-EXTENSIONS = ['.jpg', '.png', '.gif', '.bmp', '.ico']
+EXTENSIONS = ['.jpg', '.png', '.gif']
 train_path = os.path.join(args.path, "train")
 validation_path = os.path.join(args.path, "validation")
 test_path = os.path.join(args.path, "test")
