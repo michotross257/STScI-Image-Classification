@@ -2,13 +2,11 @@ import os
 import json
 import uuid
 import boto3
-import pytz
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # --------------------------- EDIT THESE VALUES ---------------------------
-time_zone = '' # for a list of time zones: pytz.all_timezones
 classes   = [] # e.g. ['CLUSTER', 'DEEP', 'NEBULA', 'STARS']
 # --------------------------- EDIT THESE VALUES ---------------------------
 
@@ -42,14 +40,14 @@ def lambda_handler(event, context):
         response = runtime.invoke_endpoint(EndpointName=endpoint_name,
                                            Body=content)
         result = json.loads(response['Body'].read().decode())
-        current_time = datetime.now(pytz.timezone(time_zone))
+        current_time = datetime.now(timezone.utc)
         image_id = str(uuid.uuid4())
 
         # update dynamodb table
         # NOTE: dynamodb requires float types to be converted to Decimal types
         item = {'IMAGE ID': image_id,
                 'DATE ADDED': str(current_time.date()),
-                'TIME ADDED': current_time.strftime('%I:%M:%S %p {}'.format(time_zone))}
+                'TIME ADDED': current_time.strftime('%I:%M:%S %p {}'.format(current_time.tzname()))}
         # determine the predicted class based on the highest probability returned
         predicted_class = {'class': '', 'probability': 0.0}
         for result_index, probability in enumerate(result):

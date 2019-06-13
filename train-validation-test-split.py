@@ -22,7 +22,7 @@ validation_path = os.path.join(args.path, "validation")
 test_path = os.path.join(args.path, "test")
 classes = os.listdir(args.path)
 classes = list(filter(lambda x: x not in ['.DS_Store'], classes))
-extensions = ['.jpg', '.png', '.gif']
+extensions = ['.jpg', '.jpeg', '.png', '.gif']
 
 
 for cls in classes:

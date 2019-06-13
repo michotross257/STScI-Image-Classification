@@ -1,15 +1,9 @@
 import os
-from datetime import datetime
-import pytz
-import uuid
+from datetime import datetime, timezone
 from decimal import Decimal
+import uuid
 import boto3
 from google.cloud import automl_v1beta1 as automl
-
-
-# --------------------------- EDIT THESE VALUES ---------------------------
-time_zone = '' # for a list of time zones: pytz.all_timezones
-# --------------------------- EDIT THESE VALUES ---------------------------
 
 
 # --------------------------- AUTOML ---------------------------
@@ -57,13 +51,13 @@ def lambda_handler(event, context):
             content = downloaded_file.read()
         output = get_prediction(content, project_id, model_id)
         image_id = str(uuid.uuid4())
-        current_time = datetime.now(pytz.timezone(time_zone))
+        current_time = datetime.now(timezone.utc)
         
         # update dynamodb table
         # NOTE: dynamodb requires float types to be converted to Decimal types
         item = {'IMAGE ID': image_id,
                 'DATE ADDED': str(current_time.date()),
-                'TIME ADDED': current_time.strftime('%I:%M:%S %p {}'.format(time_zone))}
+                'TIME ADDED': current_time.strftime('%I:%M:%S %p {}'.format(current_time.tzname()))}
         # determine the predicted class based on the highest probability returned
         predicted_class = {'class': '', 'probability': 0.0}
         for payload in output.payload:
