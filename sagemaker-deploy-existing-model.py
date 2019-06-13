@@ -10,7 +10,7 @@ parser.add_argument('region', type=str, metavar='',
 parser.add_argument('train_job', type=str, metavar='',
                     help='Name of training job to attach to.')
 parser.add_argument('-e', '--endpoint_name', type=str, default=None, metavar='',
-                    help='Name of training job to attach to.')
+                    help='Name to assign to SageMaker endpoint.')
 args = parser.parse_args()
 
 
