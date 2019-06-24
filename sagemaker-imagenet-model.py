@@ -7,15 +7,17 @@ from sagemaker.amazon.amazon_estimator import get_image_uri
 
 parser = argparse.ArgumentParser(description='Train and optionally deploy SageMaker model.')
 parser.add_argument('region', type=str, metavar='',
-                    help='Region of S3 bucket in which train & validation data is stored.')
+                    help='Region of S3 bucket in which train & validation data are stored.')
 parser.add_argument('bucket', type=str, metavar='',
-                    help='Name of S3 bucket in which train & validation data is stored.')
+                    help='Name of S3 bucket in which train & validation data are stored.')
 parser.add_argument('numclasses', type=int, metavar='',
                     help='Number of unique labels/classes in the dataset.')
 parser.add_argument('numsamples', type=int, metavar='',
                     help='Number of rows in the training set.')
 parser.add_argument('arn', type=str, metavar='',
                     help='ARN of your SageMaker Execution Role used to give learning and hosting access to data.')
+parser.add_argument('-p', '--profilename', type=str, default='default', metavar='',
+                    help='Name of AWS profile to use.')
 parser.add_argument('-e', '--epochs', type=int, default=10, metavar='',
                     help='Number of training epochs.')
 parser.add_argument('-b', '--batchsize', type=int, default=1, metavar='',
@@ -31,7 +33,7 @@ if __name__ == "__main__":
     # folder in S3 bucket
     prefix = 'image-classification-transfer-learning'
     # configure boto3 session according to S3 region
-    boto3_sess = boto3.Session(region_name=args.region)
+    boto3_sess = boto3.Session(region_name=args.region, profile_name=args.profilename)
     sess = sagemaker.Session(boto3_sess)
     # Amazon SageMaker image classification docker image
     training_image = get_image_uri(sess.boto_region_name, 'image-classification', repo_version="latest")
