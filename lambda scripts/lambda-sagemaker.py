@@ -38,6 +38,7 @@ def lambda_handler(event, context):
        Returns:
            None
     '''
+    
     for index, record in enumerate(event['Records']):
         message = json.loads(record['Sns']['Message'])
         bucket = message['Records'][0]['s3']['bucket']['name']
@@ -53,7 +54,7 @@ def lambda_handler(event, context):
             ProjectionExpression="#img_id",
             ExpressionAttributeNames={ "#img_id": "IMAGE ID" },
             KeyConditionExpression="#img_id = :id",
-            ExpressionAttributeValues={":id": image_id})
+            ExpressionAttributeValues={ ":id": image_id })
         
         # if the image id is found, then delete image from upload bucket and bypass the remaining lambda actions
         if len(response['Items']):

@@ -1,0 +1,65 @@
+{
+  "Comment": "Image Classification State Machine.",
+  "StartAt": "Duplicate Upload Check",
+  "States": {
+    "Duplicate Upload Check": {
+      "Type": "Task",
+      "Resource": "",
+      "Next": "Is Duplicate?"
+    },
+    "Is Duplicate?": {
+      "Type" : "Choice",
+      "Choices": [
+        {
+          "Variable": "$.is_duplicate",
+          "BooleanEquals": true,
+          "Next": "Delete and Exit"
+        },
+        {
+          "Variable": "$.is_duplicate",
+          "BooleanEquals": false,
+          "Next": "Classify Image"
+        }
+      ],
+      "Default": "Default State"
+    },
+
+    "Delete and Exit": {
+      "Type" : "Task",
+      "Resource": "",
+      "End": true
+    },
+
+    "Classify Image": {
+      "Type" : "Task",
+      "Resource": "",
+      "Next": "Copy and Delete Image",
+      "Retry" : [
+        {
+          "ErrorEquals": [ "States.ALL" ],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 4,
+          "BackoffRate": 1.5
+        }
+    ]
+    },
+
+    "Default State": {
+      "Type": "Fail",
+      "Error": "DefaultStateError",
+      "Cause": "No Matches!"
+    },
+
+    "Copy and Delete Image": {
+      "Type": "Task",
+      "Resource": "",
+      "Next": "Log to DynamoDB"
+    },
+
+    "Log to DynamoDB": {
+      "Type": "Task",
+      "Resource": "",
+      "End": true
+    }
+  }
+}

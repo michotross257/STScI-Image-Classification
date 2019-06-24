@@ -29,7 +29,7 @@ for cls in classes:
     # for each class, randomly shuffle the images, and then split into train, validation, and test sets
     images = os.listdir(os.path.join(args.path, cls))
     # make sure to grab only image files
-    images = list(filter(lambda img_name: any([str(img_name).endswith(extension) for extension in extensions]), images))
+    images = list(filter(lambda img_name: any([str(img_name).lower().endswith(extension) for extension in extensions]), images))
     shuffle(images)
     stop = int(args.train*len(images))
     train_images = images[0: stop]

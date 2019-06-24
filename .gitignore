@@ -1,3 +1,10 @@
 *.swp
 *.docx
 .DS_Store
+astropy/
+astropy-3.2.1.dist-info/
+numpy/
+numpy-1.16.4.dist-info/
+PIL/
+Pillow-6.0.0.dist-info/
+classify_image.zip

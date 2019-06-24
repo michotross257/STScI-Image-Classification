@@ -1,0 +1,117 @@
+import os
+import json
+import time
+import boto3
+import numpy as np
+from astropy.io import fits
+from PIL import Image
+from PIL import FitsStubImagePlugin
+
+# file size of image to be passed to SageMaker must be less than 5 MB
+MAX_FILE_SIZE_FOR_SAGEMAKER = int(5e+6) # in bytes
+
+# environment variables
+endpoint_name = os.environ.get('ENDPOINT_NAME')
+destination_bucket_name = os.environ.get('DESTINATION_BUCKET')
+classes = [cls.strip() for cls in os.environ.get('CLASSES').split(',')]
+
+# acquire AWS service access
+s3_client = boto3.client('s3')
+s3_resource = boto3.resource('s3')
+destination_bucket = s3_resource.Bucket(destination_bucket_name)
+runtime = boto3.client('runtime.sagemaker')
+
+class TimeOutException(Exception):
+    pass
+
+class FileSizeException(Exception):
+    pass
+
+def receive_alarm(signum, stack):
+    raise TimeOutException('Image classification timed out.')
+
+
+def lambda_handler(event, context, call=None, callback=None):
+    bucket = event['s3']['bucket']
+    key = event['s3']['key']
+    download_path = '/tmp/{}'.format(key)
+    
+    # download image and send off to SageMaker for classification
+    s3_client.download_file(bucket, key, download_path)
+    with fits.open(download_path) as downloaded_file:
+        primary_hdu = downloaded_file[0]
+        #'program_id': HDU.header[''],
+        #'position': HDU.header[''],
+        #'longitude': HDU.header[''],
+        #'latitude': HDU.header[''],
+        metadata = {
+            #'time_of_observation': primary_hdu.header['TIME-OBS'],
+            'time of observation @start': primary_hdu.header['TSTART'],
+            'time of observation @stop': primary_hdu.header['TSTOP'],
+            'date of observation': primary_hdu.header['DATE-OBS'],
+            'telescope': primary_hdu.header['TELESCOP'],
+            'instrument': primary_hdu.header['INSTRUME'],
+            #'filter_name': primary_hdu.header['FILTER'],
+            #'detector': primary_hdu.header['DETECTOR']
+        }
+        
+        # if present, the first and fourth indexes of the FITS file are two pieces of one single image
+        if len(downloaded_file) > 4 and downloaded_file[4].header['EXTNAME'] == 'SCI':
+            # two portions of one single image
+            data_1_of_2 = downloaded_file[1].data
+            data_2_of_2 = downloaded_file[4].data
+            height = data_1_of_2.shape[0] + data_2_of_2.shape[0]
+            width = data_1_of_2.shape[1]
+            # merge the two image Header Data Units (HDU) into one image
+            temp = np.zeros((height, width))
+            temp[0: int(height/2), :] = data_1_of_2
+            temp[int(height/2): height, :] = data_2_of_2
+            data = temp
+        else:
+            # get one of the image Header Data Units (HDU) from each FITS file
+            data = downloaded_file[1].data
+        
+    # trim the extreme values
+    top = np.percentile(data, 99)
+    data[data > top] = top
+    bottom = np.percentile(data, 1)
+    data[data < bottom] = bottom
+    
+    # scale the data
+    data = data - data.min()
+    data = (data / data.max()) * 255.0
+    data = np.flipud(data)
+    data = np.uint8(data)
+    
+    image = Image.fromarray(data)
+    download_path = download_path.replace('.fits','.jpg')
+    image.save(download_path)
+    file_size = os.path.getsize(download_path)
+    msg = 'File size of image: {:.2f} MB\n'.format(file_size * 1e-6)
+    msg += 'Size of an image to be classified by SageMaker endpoint must less than 5 MB.'
+    if file_size >= MAX_FILE_SIZE_FOR_SAGEMAKER:
+        raise FileSizeException(msg)
+    s3_client.upload_file(download_path, destination_bucket_name, event['image_id'])
+
+    with open(download_path, 'rb') as downloaded_image:
+        content = downloaded_image.read()
+    response = runtime.invoke_endpoint(EndpointName=endpoint_name,
+                                       Body=content)
+    result = json.loads(response['Body'].read().decode())
+
+    item = {'probabilities': {}}
+    # determine the predicted class based on the highest probability returned
+    predicted_class = {'class': '', 'probability': 0.0}
+    for result_index, probability in enumerate(result):
+        item['probabilities'][classes[result_index]] = str(round(probability, 8))
+        if probability > predicted_class['probability']:
+            predicted_class['class'] = classes[result_index]
+            predicted_class['probability'] = probability
+        # if two or more classes have the same high probability, then create a concatenated string of the classes
+        elif probability == predicted_class['probability']:
+            predicted_class['class'] = predicted_class['class'] + ', ' + classes[result_index]
+    item['predicted_class'] = predicted_class['class']
+    event['metadata'] = metadata
+    event['classification'] = item
+    
+    return event
