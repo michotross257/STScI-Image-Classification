@@ -14,7 +14,6 @@ def lambda_handler(event, context):
     item = {
         "IMAGE ID": event['image_id'],
         "PREDICTED CLASS": event['classification']['predicted_class']
-        
     }
     classes = event['classification']['probabilities']
     for cls in classes:

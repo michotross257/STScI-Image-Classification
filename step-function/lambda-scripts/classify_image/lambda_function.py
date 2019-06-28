@@ -9,6 +9,27 @@ from PIL import FitsStubImagePlugin
 
 # file size of image to be passed to SageMaker must be less than 5 MB
 MAX_FILE_SIZE_FOR_SAGEMAKER = int(5e+6) # in bytes
+# keys whose values are to be extracted from the header of the primary HDU of a FITS file
+hdu_keys = ['FILENAME',
+            'FILETYPE',
+            'TELESCOP',
+            'INSTRUME',
+            'TARGNAME',
+            'RA_TARG',
+            'DEC_TARG',
+            'PROPOSID',
+            'PR_INV_L',
+            'PR_INV_F',
+            'GYROMODE',
+            'DATE-OBS',
+            'TIME-OBS',
+            'EXPTIME',
+            'EXPFLAG',
+            'OBSTYPE',
+            'OBSMODE',
+            'DETECTOR',
+            'FILTER',
+            'APERTURE']
 
 # environment variables
 endpoint_name = os.environ.get('ENDPOINT_NAME')
@@ -21,39 +42,20 @@ s3_resource = boto3.resource('s3')
 destination_bucket = s3_resource.Bucket(destination_bucket_name)
 runtime = boto3.client('runtime.sagemaker')
 
-class TimeOutException(Exception):
-    pass
-
 class FileSizeException(Exception):
     pass
-
-def receive_alarm(signum, stack):
-    raise TimeOutException('Image classification timed out.')
 
 
 def lambda_handler(event, context, call=None, callback=None):
     bucket = event['s3']['bucket']
     key = event['s3']['key']
-    download_path = '/tmp/{}'.format(key)
+    download_path = '/tmp/{}.fits'.format(event['image_id'])
     
     # download image and send off to SageMaker for classification
-    s3_client.download_file(bucket, key, download_path)
+    s3_client.download_file(bucket, key, download_path, ExtraArgs={'RequestPayer': 'requester'})
     with fits.open(download_path) as downloaded_file:
         primary_hdu = downloaded_file[0]
-        #'program_id': HDU.header[''],
-        #'position': HDU.header[''],
-        #'longitude': HDU.header[''],
-        #'latitude': HDU.header[''],
-        metadata = {
-            #'time_of_observation': primary_hdu.header['TIME-OBS'],
-            'time of observation @start': primary_hdu.header['TSTART'],
-            'time of observation @stop': primary_hdu.header['TSTOP'],
-            'date of observation': primary_hdu.header['DATE-OBS'],
-            'telescope': primary_hdu.header['TELESCOP'],
-            'instrument': primary_hdu.header['INSTRUME'],
-            #'filter_name': primary_hdu.header['FILTER'],
-            #'detector': primary_hdu.header['DETECTOR']
-        }
+        metadata = {key: primary_hdu.header[key] for key in hdu_keys}
         
         # if present, the first and fourth indexes of the FITS file are two pieces of one single image
         if len(downloaded_file) > 4 and downloaded_file[4].header['EXTNAME'] == 'SCI':
