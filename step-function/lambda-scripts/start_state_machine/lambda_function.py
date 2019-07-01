@@ -3,6 +3,7 @@ import json
 from uuid import uuid4
 import boto3
 
+
 VALID_EXTENSIONS = ['fits']
 VALID_SUBGROUPS = ['flc', 'flt']
 state_machine_arn = os.environ.get('STATE_MACHINE_ARN')
@@ -51,7 +52,7 @@ def lambda_handler(event, context):
 
     elements = {'extension': {'input': extension,
                               'valid': VALID_EXTENSIONS},
-                'subgroup':  {'input': subgroup,
+                'subgroup' : {'input': subgroup,
                               'valid': VALID_SUBGROUPS}}
 
     problems = []
