@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from uuid import uuid4
 import boto3
 
@@ -77,6 +78,25 @@ def lambda_handler(event, context):
             'bucket': bucket
         }
     }
+
+    running_executions = client.list_executions(
+        stateMachineArn=state_machine_arn,
+        statusFilter='RUNNING'
+    )
+
+    # wait until there is no running execution of the state machine
+    delay = 0.10
+    while True:
+        if not running_executions['executions']:
+            break
+        else:
+            time.sleep(delay)
+            running_executions = client.list_executions(
+                stateMachineArn=state_machine_arn,
+                statusFilter='RUNNING'
+            )
+            # incrementally increase sleeping time
+            delay *= 2
     
     response = client.start_execution(
         stateMachineArn=state_machine_arn,
