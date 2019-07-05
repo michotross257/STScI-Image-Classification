@@ -13,41 +13,42 @@
         {
           "Variable": "$.is_duplicate",
           "BooleanEquals": true,
-          "Next": "Delete and Exit"
+          "Next": "Duplicate Image ID"
         },
         {
           "Variable": "$.is_duplicate",
           "BooleanEquals": false,
           "Next": "Classify Image"
         }
-      ],
-      "Default": "Default State"
-    },
-
-    "Delete and Exit": {
-      "Type" : "Task",
-      "Resource": "",
-      "End": true
+      ]
     },
 
     "Classify Image": {
       "Type" : "Task",
       "Resource": "",
-      "Next": "Copy and Delete Image",
-      "Retry" : [
-        {
-          "ErrorEquals": [ "States.ALL" ],
-          "IntervalSeconds": 3,
-          "MaxAttempts": 4,
-          "BackoffRate": 1.5
-        }
-    ]
+      "Catch": [ {
+          "ErrorEquals": ["FileSizeException"],
+          "Next": "File Size Too Large for SageMaker"
+       }],
+      "Retry": [ {
+          "ErrorEquals": ["States.Timeout"],
+          "IntervalSeconds": 1,
+          "BackoffRate": 2.0,
+          "MaxAttempts": 3
+        }],
+      "Next": "Copy and Delete Image"
     },
 
-    "Default State": {
+    "File Size Too Large for SageMaker": {
+       "Type": "Fail",
+       "Cause": "The file size of the image is greater than or equal to 5 MB.",
+       "Error": "SageMakerFileSizeError"
+    },
+
+    "Duplicate Image ID": {
       "Type": "Fail",
-      "Error": "DefaultStateError",
-      "Cause": "No Matches!"
+      "Cause": "An image with the same image ID has already been processed.",
+      "Error": "DuplicateImageIDError"
     },
 
     "Copy and Delete Image": {
