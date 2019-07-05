@@ -53,12 +53,11 @@ def lambda_handler(event, context, call=None, callback=None):
     
     # download image and send off to SageMaker for classification
     s3_client.download_file(bucket, key, download_path, ExtraArgs={'RequestPayer': 'requester'})
+    
     with fits.open(download_path) as downloaded_file:
         primary_hdu = downloaded_file[0]
         header_keys = list(primary_hdu.header.keys())
         metadata = {key: primary_hdu.header[key] for key in hdu_keys if key in header_keys}
-        # metadata = {key: primary_hdu.header[key] for key in hdu_keys}
-        
         # if present, the first and fourth indexes of the FITS file are two pieces of one single image
         if len(downloaded_file) > 4 and downloaded_file[4].header['EXTNAME'] == 'SCI':
             # two portions of one single image
@@ -74,7 +73,10 @@ def lambda_handler(event, context, call=None, callback=None):
         else:
             # get one of the image Header Data Units (HDU) from each FITS file
             data = downloaded_file[1].data
-        
+    
+    # clean up temp download
+    os.remove(download_path)
+    
     # trim the extreme values
     top = np.percentile(data, 99)
     data[data > top] = top
@@ -94,11 +96,15 @@ def lambda_handler(event, context, call=None, callback=None):
     msg = 'File size of image: {:.2f} MB\n'.format(file_size * 1e-6)
     msg += 'Size of an image to be classified by SageMaker endpoint must less than 5 MB.'
     if file_size >= MAX_FILE_SIZE_FOR_SAGEMAKER:
+        # clean up temp download
+        os.remove(download_path)
         raise FileSizeException(msg)
     s3_client.upload_file(download_path, destination_bucket_name, event['image_id'])
 
     with open(download_path, 'rb') as downloaded_image:
         content = downloaded_image.read()
+    # clean up temp download
+    os.remove(download_path)
     response = runtime.invoke_endpoint(EndpointName=endpoint_name,
                                        Body=content)
     result = json.loads(response['Body'].read().decode())
