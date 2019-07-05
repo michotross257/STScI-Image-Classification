@@ -7,4 +7,5 @@ numpy/
 numpy-1.16.4.dist-info/
 PIL/
 Pillow-6.0.0.dist-info/
+Pillow-6.1.0.dist-info/
 classify_image.zip
