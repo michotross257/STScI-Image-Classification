@@ -1,5 +1,6 @@
 *.swp
 *.docx
+Pillow*
 .DS_Store
 astropy/
 astropy-3.2.1.dist-info/
