@@ -46,7 +46,7 @@ def publish_messages(contents):
                 cnt += 1
             else:
                 unsuccessful_msg_keys.append(key)
-                # include a time buffer to prevent pipeline overload
+            # include a time buffer to prevent pipeline overload
             time.sleep(DELAY)
 
 
