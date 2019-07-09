@@ -1,7 +1,6 @@
 import time
 import requests
 from bs4 import BeautifulSoup
-import selenium
 from selenium import webdriver
 import pandas as pd
 import astropy.coordinates as coord
