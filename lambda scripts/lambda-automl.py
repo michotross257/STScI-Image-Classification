@@ -68,7 +68,6 @@ def lambda_handler(event, context):
             # if two or more classes have the same high probability, then create a concatenated string of the classes
             elif payload.classification.score == predicted_class['probability']:
                 predicted_class['class'] = predicted_class['class'] + ', ' + payload.display_name
-                predicted_class['probability'] = payload.classification.score
         item['CLASS'] = predicted_class['class']
         db_table.put_item(Item=item)
 
