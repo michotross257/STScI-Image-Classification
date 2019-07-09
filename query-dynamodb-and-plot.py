@@ -31,6 +31,7 @@ kwargs = {
 
 response = db_client.scan(**kwargs)
 responses = []
+# query table for all entries
 while 'LastEvaluatedKey' in response.keys():
     key = response['LastEvaluatedKey']
     responses.extend([item for item in response['Items']])
@@ -39,6 +40,7 @@ while 'LastEvaluatedKey' in response.keys():
     response = db_client.scan(**temp_kwargs)
 responses.extend([item for item in response['Items']])
 
+# extract the values from each entry
 type_conversion = {'N': float, 'S': str}
 for index in range(len(responses)):
     vals = responses[index]
@@ -55,6 +57,7 @@ ordered_cols = ['IMAGE ID', 'PREDICTED CLASS',
                 'PROBABILITY OF NEBULA', 'PROBABILITY OF STARS',
                 'DEC_TARG', 'RA_TARG']
 
+# stick the data into a DataFrame
 df = pd.DataFrame(columns=list(responses[0].keys()))
 for index, item in enumerate(responses):
     df.loc[index, :] = item
@@ -71,6 +74,7 @@ colors = {'CLUSTER': 'red',
 # Authors: Adrian M. Price-Whelan and Kelle Cruz
 # ==============================================
 
+# convert to angular coordinates
 ra = coord.Angle(df['RA_TARG'] * units.degree)
 ra = ra.wrap_at(180 * units.degree)
 dec = coord.Angle(df['DEC_TARG'] * units.degree)
