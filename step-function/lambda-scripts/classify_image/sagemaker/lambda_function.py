@@ -92,7 +92,7 @@ def lambda_handler(event, context, call=None, callback=None):
     image.save(download_path)
     file_size = os.path.getsize(download_path)
     msg = 'File size of image: {:.2f} MB\n'.format(file_size * 1e-6)
-    msg += 'Size of an image to be classified by SageMaker endpoint must less than 5 MB.'
+    msg += 'Size of an image to be classified by SageMaker endpoint must be less than 5 MB.'
     if file_size >= MAX_FILE_SIZE_FOR_SAGEMAKER:
         # clean up temp download
         os.remove(download_path)
