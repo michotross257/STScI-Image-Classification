@@ -114,6 +114,7 @@ if __name__ == '__main__':
             temp = [SkyCoord(_ra.replace('\xa0', ' ').strip(),
                              _dec.replace('\xa0', ' ').strip()) for _ra, _dec in zip(ra, dec)]
         else:
+            # add the Sharpless Catolog images (all nebulae)
             ra = ra.append(sharpless_collection['RA'])
             dec = dec.append(sharpless_collection['DEC'])
             temp = [SkyCoord(_ra, _dec, unit='deg') for _ra, _dec in zip(ra, dec)]
