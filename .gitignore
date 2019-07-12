@@ -10,8 +10,8 @@ Pillow*/
 **/classify_image/automl/
 **/classify_image/sagemaker/
 
-# retain only the lambda script 
-!*lambda_function.py
+# retain the lambda script 
+!**/lambda_function.py
 
 # ignore the deployment package
 classify_image.zip
