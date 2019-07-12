@@ -7,8 +7,8 @@ astropy*/
 numpy*/
 PIL*/
 Pillow*/
-**/classify_image/automl/
-**/classify_image/sagemaker/
+*/classify_image/automl/**
+*/classify_image/sagemaker/**
 
 # retain the lambda script 
 !**/lambda_function.py
