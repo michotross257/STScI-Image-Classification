@@ -5,61 +5,55 @@
     "Duplicate Upload Check": {
       "Type": "Task",
       "Resource": "",
-      "Next": "Is Duplicate?"
+      "Catch": [ {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error-info",
+          "Next": "Log Error"
+       }],
+      "Next": "Classify Image"
     },
-    "Is Duplicate?": {
-      "Type" : "Choice",
-      "Choices": [
-        {
-          "Variable": "$.is_duplicate",
-          "BooleanEquals": true,
-          "Next": "Duplicate Image ID"
-        },
-        {
-          "Variable": "$.is_duplicate",
-          "BooleanEquals": false,
-          "Next": "Classify Image"
-        }
-      ]
-    },
-
     "Classify Image": {
       "Type" : "Task",
       "Resource": "",
-      "Catch": [ {
-          "ErrorEquals": ["FileSizeException"],
-          "Next": "File Size Too Large for SageMaker"
-       }],
       "Retry": [ {
           "ErrorEquals": ["States.Timeout"],
           "IntervalSeconds": 1,
           "BackoffRate": 2.0,
           "MaxAttempts": 3
         }],
+      "Catch": [ {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error-info",
+          "Next": "Log Error"
+       }],
       "Next": "Copy and Delete Image"
     },
 
-    "File Size Too Large for SageMaker": {
-       "Type": "Fail",
-       "Cause": "The file size of the image is greater than or equal to 5 MB.",
-       "Error": "SageMakerFileSizeError"
-    },
-
-    "Duplicate Image ID": {
-      "Type": "Fail",
-      "Cause": "An image with the same image ID has already been processed.",
-      "Error": "DuplicateImageIDError"
+    "Log Error": {
+       "Type": "Task",
+       "Resource": "",
+       "End": true
     },
 
     "Copy and Delete Image": {
       "Type": "Task",
       "Resource": "",
+      "Catch": [ {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error-info",
+          "Next": "Log Error"
+       }],
       "Next": "Log to DynamoDB"
     },
 
     "Log to DynamoDB": {
       "Type": "Task",
       "Resource": "",
+      "Catch": [ {
+          "ErrorEquals": ["States.ALL"],
+          "ResultPath": "$.error-info",
+          "Next": "Log Error"
+       }],
       "End": true
     }
   }
