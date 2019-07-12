@@ -8,7 +8,8 @@ from PIL import Image
 from PIL import FitsStubImagePlugin
 from google.cloud import automl_v1beta1 as automl
 
-
+# file size of image to be passed to AutoML must be less than 31.45828 MB
+MAX_FILE_SIZE_FOR_AUTOML = 31458280 # in bytes
 # keys whose values are to be extracted from the header of the primary HDU of a FITS file
 hdu_keys = ['FILENAME',
             'FILETYPE',
@@ -43,6 +44,9 @@ destination_bucket_name = os.environ.get('DESTINATION_BUCKET')
 
 # acquire AWS service access
 s3_client = boto3.client('s3')
+
+class FileSizeException(Exception):
+    pass
 
 def get_prediction(content, project_id, model_id):
     '''Pass an image to automl model for classification.
@@ -103,6 +107,13 @@ def lambda_handler(event, context, call=None, callback=None):
     image = Image.fromarray(data)
     download_path = download_path.replace('.fits','.jpg')
     image.save(download_path)
+    file_size = os.path.getsize(download_path)
+    msg = 'File size of image: {:.2f} MB\n'.format(file_size * 1e-6)
+    msg += 'Size of an image to be classified by AutoML must be less than 31.45828 MB'
+    if file_size >= MAX_FILE_SIZE_FOR_AUTOML:
+        # clean up temp download
+        os.remove(download_path)
+        raise FileSizeException(msg)
     s3_client.upload_file(download_path, destination_bucket_name, event['image_id'])
 
     with open(download_path, 'rb') as downloaded_image:
@@ -110,8 +121,6 @@ def lambda_handler(event, context, call=None, callback=None):
     # clean up temp download
     os.remove(download_path)
     response = get_prediction(content, project_id, model_id)
-
-    #========================================================================
 
     item = {'probabilities': {}}
     # determine the predicted class based on the highest probability returned
