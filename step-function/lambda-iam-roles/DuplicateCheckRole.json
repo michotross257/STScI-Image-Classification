@@ -6,7 +6,6 @@
             "Effect": "Allow",
             "Action": [
                 "logs:CreateLogStream",
-                "dynamodb:DescribeTable",
                 "dynamodb:Query",
                 "logs:CreateLogGroup",
                 "logs:PutLogEvents"
