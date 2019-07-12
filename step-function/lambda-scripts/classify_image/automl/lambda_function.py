@@ -39,14 +39,10 @@ compute_region = os.environ.get('AUTOML_COMPUTE_REGION')
 # the level of confidence the model must have to return the results for a class label
 score_threshold = '0.0' # value from 0.0 to 1.0; default is 0.5
 # --------------------------- AWS ---------------------------
-endpoint_name = os.environ.get('ENDPOINT_NAME')
 destination_bucket_name = os.environ.get('DESTINATION_BUCKET')
-classes = [cls.strip() for cls in os.environ.get('CLASSES').split(',')]
 
 # acquire AWS service access
 s3_client = boto3.client('s3')
-s3_resource = boto3.resource('s3')
-destination_bucket = s3_resource.Bucket(destination_bucket_name)
 
 def get_prediction(content, project_id, model_id):
     '''Pass an image to automl model for classification.

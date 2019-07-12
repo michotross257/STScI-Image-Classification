@@ -38,8 +38,6 @@ classes = [cls.strip() for cls in os.environ.get('CLASSES').split(',')]
 
 # acquire AWS service access
 s3_client = boto3.client('s3')
-s3_resource = boto3.resource('s3')
-destination_bucket = s3_resource.Bucket(destination_bucket_name)
 runtime = boto3.client('runtime.sagemaker')
 
 class FileSizeException(Exception):
