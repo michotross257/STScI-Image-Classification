@@ -17,4 +17,4 @@ classify_image.zip
 !lambda_function.py
 
 # ignore outdated lambda scripts
-/stsci-image-classification-project/lambda-scripts/**
+stsci-image-classification-project/lambda-scripts/**
