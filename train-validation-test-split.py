@@ -21,7 +21,8 @@ train_path = os.path.join(args.path, "train")
 validation_path = os.path.join(args.path, "validation")
 test_path = os.path.join(args.path, "test")
 classes = os.listdir(args.path)
-classes = list(filter(lambda x: x not in ['.DS_Store'], classes))
+classes = list(filter(lambda x: all([not x.endswith(y) for y in ['.zip',
+                                                                 '.DS_Store']]), classes))
 extensions = ['.jpg', '.jpeg', '.png', '.gif']
 
 
@@ -32,7 +33,7 @@ for cls in classes:
     images = list(filter(lambda img_name: any([str(img_name).lower().endswith(extension) for extension in extensions]), images))
     shuffle(images)
     stop = int(args.train*len(images))
-    train_images = images[0: stop]
+    train_images = images[: stop]
     start = stop
     stop = start + int(args.validation*len(images))
     validation_images = images[start: stop]
@@ -44,7 +45,7 @@ for cls in classes:
                  (validation_path, validation_images),
                  (test_path, test_images)]:
         destination_path = os.path.join(item[0], cls)
-        # if class folder doesn't exist, then create it
+        # create class folder
         if not os.path.isdir(destination_path):
             os.makedirs(destination_path)
         # copy all of the images of that set (e.g. validation) for that class into the respective folder
