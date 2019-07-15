@@ -18,4 +18,3 @@ classify_image.zip
 
 # ignore outdated lambda scripts
 /stsci-image-classification-project/lambda-scripts/**
-
