@@ -17,9 +17,9 @@ msg = 'The sum of train, validation, and test proportions must equal 1.0'
 assert(args.train + args.validation + args.test == 1.0), msg
 
 seed(0) # set numpy random seed
-train_path = os.path.join(args.path, "train")
-validation_path = os.path.join(args.path, "validation")
-test_path = os.path.join(args.path, "test")
+train_path = os.path.join(args.path, "TRAIN")
+validation_path = os.path.join(args.path, "VALIDATION")
+test_path = os.path.join(args.path, "TEST")
 classes = os.listdir(args.path)
 classes = list(filter(lambda x: all([not x.endswith(y) for y in ['.zip',
                                                                  '.DS_Store']]), classes))
