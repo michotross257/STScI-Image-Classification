@@ -8,6 +8,9 @@ from PIL import Image
 from PIL import FitsStubImagePlugin
 from google.cloud import automl_v1beta1 as automl
 
+
+# AutoML is currently not recognizing other regions. This is the default compute region
+COMPUTE_REGION = 'us-central1'
 # file size of image to be passed to AutoML must be less than 31.45828 MB
 MAX_FILE_SIZE_FOR_AUTOML = 31458280 # in bytes
 # keys whose values are to be extracted from the header of the primary HDU of a FITS file
@@ -36,7 +39,6 @@ hdu_keys = ['FILENAME',
 # --------------------------- AUTOML ---------------------------
 project_id = os.environ.get('AUTOML_PROJECT_ID')
 model_id = os.environ.get('AUTOML_MODEL_ID')
-compute_region = os.environ.get('AUTOML_COMPUTE_REGION')
 # the level of confidence the model must have to return the results for a class label
 score_threshold = '0.0' # value from 0.0 to 1.0; default is 0.5
 # --------------------------- AWS ---------------------------
@@ -52,7 +54,7 @@ def get_prediction(content, project_id, model_id):
     '''Pass an image to automl model for classification.
        Function returns an automl_v1beta1.types.PredictResponse object.'''
     automl_client = automl.AutoMlClient()
-    model_full_id = automl_client.model_path(project_id, compute_region, model_id)
+    model_full_id = automl_client.model_path(project_id, COMPUTE_REGION, model_id)
     prediction_client = automl.PredictionServiceClient()
     payload = {'image': {'image_bytes': content}}
     params = {'score_threshold': score_threshold}
