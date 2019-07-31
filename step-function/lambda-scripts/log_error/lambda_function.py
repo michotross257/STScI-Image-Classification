@@ -10,7 +10,10 @@ table = db_resource.Table(table_id)
 
 
 def lambda_handler(event, context):
-    error = json.loads(event['error-info']['Cause'])
+    try:
+        error = json.loads(event['error-info']['Cause'])
+    except:
+        error = event['error-info']['Cause']
     
     item = {
         "IMAGE ID": event['image_id'],

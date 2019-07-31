@@ -6,10 +6,10 @@ from google.cloud import storage
 # otherwise you will get a permission error.
 
 parser = argparse.ArgumentParser(description='Compile CSV file of Google Cloud images for Google Cloud AutoML.')
-parser.add_argument('bucket', type=str, metavar='', help='Name of GCP bucket.')
-parser.add_argument('project_folder', type=str, metavar='', help='Name of root project folder in GCP bucket.')
-parser.add_argument('save_path', type=str, metavar='', help='Path to CSV file (e.g. /Users/johndoe/Desktop/gcloud_data.csv).')
-parser.add_argument('classes', type=str, nargs='*', metavar='', help='Classes/labels in dataset (e.g. dog cat bird). Space-delimited list.')
+parser.add_argument('bucket', type=str, help='Name of GCP bucket.')
+parser.add_argument('project_folder', type=str, help='Name of root project folder in GCP bucket.')
+parser.add_argument('save_path', type=str, help='Path to CSV file (e.g. /Users/johndoe/Desktop/gcloud_data.csv).')
+parser.add_argument('classes', type=str, nargs='*', help='Classes/labels in dataset (e.g. dog cat bird). Space-delimited list.')
 args = parser.parse_args()
 
 

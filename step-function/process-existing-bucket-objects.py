@@ -6,12 +6,12 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='Publish existing bucket objects as message to SNS topic.')
-parser.add_argument('region', type=str, metavar='', help='Region of your AWS account.')
-parser.add_argument('profile', type=str, metavar='', help='Name of the AWS profile to use.')
-parser.add_argument('bucket', type=str, metavar='', help='Name of the bucket storing objects to be processed.')
-parser.add_argument('topic_arn', type=str, metavar='', help='ARN of the topic to publish to.')
+parser.add_argument('region', type=str, help='Region of your AWS account.')
+parser.add_argument('profile', type=str, help='Name of the AWS profile to use.')
+parser.add_argument('bucket', type=str, help='Name of the bucket storing objects to be processed.')
+parser.add_argument('topic_arn', type=str, help='ARN of the topic to publish to.')
 parser.add_argument('-d', '--delay', type=float, default=0.10, metavar='',
-                    help='Time buffer between message publishings.')
+                    help='Time buffer between message publishings (default: 0.10 seconds).')
 args = parser.parse_args()
 
 def publish_messages(contents):

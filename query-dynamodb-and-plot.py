@@ -9,8 +9,8 @@ from matplotlib.colors import to_rgba
 
 
 parser = argparse.ArgumentParser(description='Query DynamoDB table for all entries and then plot the entries.')
-parser.add_argument('profile', type=str, metavar='', help='Name of the AWS profile to use.')
-parser.add_argument('table', type=str, metavar='', help='Name of the DynamoDB to query.')
+parser.add_argument('profile', type=str, help='Name of the AWS profile to use.')
+parser.add_argument('table', type=str, help='Name of the DynamoDB to query.')
 args = parser.parse_args()
 
 sess = boto3.Session(profile_name=args.profile)

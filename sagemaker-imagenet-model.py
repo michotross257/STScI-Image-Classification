@@ -6,24 +6,24 @@ from sagemaker.amazon.amazon_estimator import get_image_uri
 
 
 parser = argparse.ArgumentParser(description='Train and optionally deploy SageMaker model.')
-parser.add_argument('region', type=str, metavar='',
+parser.add_argument('region', type=str,
                     help='Region of S3 bucket in which train & validation data are stored.')
-parser.add_argument('bucket', type=str, metavar='',
+parser.add_argument('bucket', type=str,
                     help='Name of S3 bucket in which train & validation data are stored.')
-parser.add_argument('numclasses', type=int, metavar='',
+parser.add_argument('numclasses', type=int,
                     help='Number of unique labels/classes in the dataset.')
-parser.add_argument('numsamples', type=int, metavar='',
+parser.add_argument('numsamples', type=int,
                     help='Number of rows in the training set.')
-parser.add_argument('arn', type=str, metavar='',
+parser.add_argument('arn', type=str,
                     help='ARN of your SageMaker Execution Role used to give learning and hosting access to data.')
 parser.add_argument('-p', '--profilename', type=str, default='default', metavar='',
-                    help='Name of AWS profile to use.')
+                    help='Name of AWS profile to use (default: "default").')
 parser.add_argument('-e', '--epochs', type=int, default=10, metavar='',
-                    help='Number of training epochs.')
+                    help='Number of training epochs (default: 10).')
 parser.add_argument('-b', '--batchsize', type=int, default=1, metavar='',
-                    help='Number of training samples to process before updating the model’s weights.')
-parser.add_argument('-l', '--learning_rate', type=float, default=0.0001, metavar='',
-                    help='Model learning rate.')
+                    help='Number of training samples to process before updating the model’s weights (default: 1).')
+parser.add_argument('-l', '--learning_rate', type=str, default='0.0001', metavar='',
+                    help='Model learning rate (default: 0.0001).')
 parser.add_argument('-d', '--deploy', action='store_true',
                     help='Whether to deploy the model after training.')
 args = parser.parse_args()

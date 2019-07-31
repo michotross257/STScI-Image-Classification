@@ -5,9 +5,9 @@ from sagemaker.estimator import Estimator
 
 
 parser = argparse.ArgumentParser(description='Deploy a trained model to SageMaker endpoint.')
-parser.add_argument('region', type=str, metavar='',
+parser.add_argument('region', type=str,
                     help='Default region when creating new connections.')
-parser.add_argument('train_job', type=str, metavar='',
+parser.add_argument('train_job', type=str,
                     help='Name of training job to attach to.')
 parser.add_argument('-e', '--endpoint_name', type=str, default=None, metavar='',
                     help='Name to assign to SageMaker endpoint.')

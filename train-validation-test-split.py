@@ -5,13 +5,13 @@ from shutil import copyfile
 
 
 parser = argparse.ArgumentParser(description='Split directory of folders of images into train, validation, and test sets.')
-parser.add_argument('path', type=str, metavar='', help='Path to parent directory')
+parser.add_argument('path', type=str, help='Path to parent directory')
 parser.add_argument('-t', '--train', type=float, default=0.70, metavar='',
-                    help='Proportion of data to allocate as training data. Float between 0.0 and 1.0.')
+                    help='Proportion of data to allocate as training data. Float between 0.0 and 1.0 (default: 0.70).')
 parser.add_argument('-v', '--validation', type=float, default=0.10, metavar='',
-                    help='Proportion of data to allocate as validation data. Float between 0.0 and 1.0.')
+                    help='Proportion of data to allocate as validation data. Float between 0.0 and 1.0 (default: 0.10).')
 parser.add_argument('-e', '--test', type=float, default=0.20, metavar='',
-                    help='Proportion of data to allocate as test data. Float between 0.0 and 1.0.')
+                    help='Proportion of data to allocate as test data. Float between 0.0 and 1.0 (default: 0.20).')
 args = parser.parse_args()
 msg = 'The sum of train, validation, and test proportions must equal 1.0'
 assert(args.train + args.validation + args.test == 1.0), msg
